@@ -20,6 +20,17 @@ You can choose to run salt with master and minion or masterless.
 ### Masterless minion
 ```sh bootstrap-salt.sh -i [MINION ID]```
 
+Edit minion config to search for setup files locally
+```vi /etc/salt/minion```
+Change and uncomment:
+```yaml
+#file_client: remote
+```
+To:
+```yaml
+file_client: local
+```
+
 ## Git clone all setup files to /srv/
 The bootstrap-salt setup created the /srv/ dir. You can clone this repo or make your own setup files.  
 ```apt install git``` (if not installed)  
@@ -27,13 +38,13 @@ The bootstrap-salt setup created the /srv/ dir. You can clone this repo or make 
 ```git clone https://github.com/BobBluyssen/salt-web-django.git .```  
 
 ### Masterless minion
-Edit minion config to search for setup files locally  
-```vi /etc/salt/minion```  
-Change and uncomment:    
-```yaml 
-#file_client: remote
-```  
-To:  
-```yaml 
-file_client: local
-```  
+Copy the settings_example.conf to create your own settings
+```cp /srv/pillar/settings_example.sls /srv/pillar/settings.sls```  
+```vi /srv/pillar/settings.sls```  
+
+Change al capitalised settings to your own
+```settings:```
+
+Then:
+```salt-call state.apply```
+
