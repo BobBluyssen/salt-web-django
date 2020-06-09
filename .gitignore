@@ -1,1 +1,2 @@
 pillar/settings.sls
+salt/django/local_settings.py
