@@ -1,7 +1,6 @@
 mysql-install:
-  pkg:
-    - installed
-    - pkgs: 
+  pkg.installed:
+    - pkgs:
       - mysql-server
       - libmysqlclient-dev
       - default-libmysqlclient-dev
@@ -9,7 +8,7 @@ mysql-install:
       - python-mysqldb
       - phpmyadmin
     - require:
-      - python-dev
+      - python3
 
 phpmyadmin-append:
   file.append:
@@ -23,15 +22,8 @@ mysql-python:
     - require:
       - mysql-install
 
-python-dev:
-  pkg.installed:
-    - name: python3-dev
-    - require:
-      - python3
-
 mysql:
-  pkg:
-    - installed
+  pkg.installed:
     - name: mysql-server
     - service:
       - running
@@ -63,7 +55,6 @@ mysql-database-{{domain}}:
 #  mysql_grants.present:
 #    - database: *
 #    - grant: ALL PRIVILEGES
-#    - user: root 
+#    - user: root
 #  require:
 #    - pkg: python-mysqldb
-

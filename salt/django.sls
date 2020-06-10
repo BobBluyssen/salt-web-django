@@ -1,5 +1,8 @@
 python3:
-  pkg.installed
+  pkg.installed:
+    - pkgs:
+      - python3
+      - python3-dev
 
 python-pip:
   pkg.installed:
@@ -7,7 +10,7 @@ python-pip:
       - python3-pip
       - python-pip
     - require:
-      - python3  
+      - python3
 
 mod-wsgi:
   pkg.installed:
