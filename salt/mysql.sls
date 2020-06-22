@@ -48,13 +48,13 @@ mysql-database-{{domain}}:
     - pkg: python-mysqldb
 {% endfor %}
 
-#mysql-user-root:
-#  mysql_user.present:
-#    - name: root
-#    - password_hash: '{{pillar.get('RootMysqlPassword', "")}}'
-#  mysql_grants.present:
-#    - database: *
-#    - grant: ALL PRIVILEGES
-#    - user: root
-#  require:
-#    - pkg: python-mysqldb
+mysql-user-root:
+  mysql_user.present:
+    - name: root
+    - password_hash: '{{pillar.get('RootMysqlPassword', "")}}'
+  mysql_grants.present:
+    - database: '*'
+    - grant: ALL PRIVILEGES
+    - user: root
+  require:
+    - pkg: python-mysqldb

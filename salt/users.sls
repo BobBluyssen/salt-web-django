@@ -5,7 +5,7 @@
     - password: {{data['password']}}
     - gid: users
     - groups:
-      - users
+      - {{data['group']}}
 {% if data['admin'] %}
       - adm
       - sudo

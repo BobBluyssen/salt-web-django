@@ -20,30 +20,32 @@ default.conf:
       - pkg: apache2
 
 {% for domain, data in pillar.get('domains', {}).items() %}
+{% set project_root = data['django_path'] ~ data['project_name'] %}
+
 /etc/apache2/sites-available/{{domain}}.conf:
   apache.configfile:
     - config:
       - Directory:
-        - this: {{data['project_root']}}
+        - this: {{project_root}}
         - Order: Deny,Allow
         - Allow from: all
       - Directory:
-        - this: {{data['project_root']}}/settings
+        - this: {{project_root}}/settings
         - Files:
           - this: wsgi.py
           - Require: all granted
       - Directory:
-        - this: {{data['project_root']}}/static
+        - this: {{project_root}}/static
         - Require: all granted
       - VirtualHost:
         - this: '*:80'
         - ServerName:
           - {{domain}}
         - Alias:
-          - /static/ {{data['project_root']}}/static/
+          - /static/ {{project_root}}/static/
         - WSGIScriptAlias:
-          - / {{data['project_root']}}/settings/wsgi.py
-        - DocumentRoot: {{data['project_root']}}
+          - / {{project_root}}/settings/wsgi.py
+        - DocumentRoot: {{project_root}}
     - listen_in:
       - service: apache2
 
@@ -51,7 +53,7 @@ apache2-wsgi-{{domain}}:
   file.append:
     - name: /etc/apache2/apache2.conf
     - text:
-      - WSGIPythonPath {{data['project_root']}}
+      - WSGIPythonPath {{project_root}}
 
 Enable {{domain}} site:
   apache_site.enabled:

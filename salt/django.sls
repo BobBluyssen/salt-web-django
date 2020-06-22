@@ -27,10 +27,17 @@ django:
       - python-pip
 
 {% for domain, data in pillar.get('domains', {}).items() %}
-{% if not salt['file.directory_exists'](data['project_root']) %}
+
+{% set project_root = data['django_path'] ~ data['project_name'] %}
+{% if not salt['file.directory_exists'](project_root) %}
+
+{% set user = data['user']  %}
+{% set group = pillar.get('users')[user]['group'] %}
+{% set email = pillar.get('users')[user]['email'] %}
+
 create_django_project_{{domain}}:
   cmd.run:
-    - group: {{data['group']}}
+    - group: {{group}}
     - name: django-admin startproject settings
     - cwd: {{data['django_path']}}
     - require:
@@ -38,36 +45,36 @@ create_django_project_{{domain}}:
 
 chown_django_project_{{domain}}:
   cmd.run:
-    - name: chown -R {{data['user']}}:{{data['group']}} {{data['django_path']}}
+    - name: chown -R {{user}}: {{data['django_path']}}
 
 rename_project_dir_{{domain}}:
   cmd.run:
-    - runas: {{data['user']}}
-    - group: {{data['group']}}
-    - name: mv settings {{data['project_root']}}
+    - runas: {{user}}
+    - group: {{group}}
+    - name: mv settings {{project_root}}
     - cwd: {{data['django_path']}}
 
 collectstatic_{{domain}}:
   module.wait:
     - name: django.collectstatic
     - settings_module: settings.settings
-    - pythonpath: {{data['project_root']}}
+    - pythonpath: {{project_root}}
     - watch:
       - add_local_settings_{{domain}}
 
 createsuperuser_{{domain}}:
   module.run:
     - name: django.createsuperuser
-    - username: {{data['user']}}
-    - email: {{data['email']}}
+    - username: {{user}}
+    - email: {{email}}
     - settings_module: settings.settings
-    - pythonpath: {{data['project_root']}}
+    - pythonpath: {{project_root}}
 
 {% endif %}
 
 append_settings_{{domain}}:
   file.append:
-    - name: {{data['project_root']}}/settings/settings.py
+    - name: {{project_root}}/settings/settings.py
     - text:
       - from settings.local_settings import *
 
@@ -77,16 +84,20 @@ append_settings_{{domain}}:
 {% set _ = allowed_hosts.append("'www."+domain+"'") %}
 {% endfor %}
 
+{% set user = data['user']  %}
+{% set group = pillar.get('users')[user]['group'] %}
+{% set email = pillar.get('users')[user]['email'] %}
+
 add_local_settings_{{domain}}:
   file.managed:
-    - name: {{data['project_root']}}/settings/local_settings.py
-    - user: {{data['user']}}
-    - group: {{data['group']}}
+    - name: {{project_root}}/settings/local_settings.py
+    - user: {{user}}
+    - group: {{group}}
     - template: jinja
     - contents: |
         DEBUG = {{data['debug']}}
         ALLOWED_HOSTS = [{{ allowed_hosts|join(', ') }}]
-        STATIC_ROOT = "{{data['project_root']}}/static/"
+        STATIC_ROOT = "{{project_root}}/static/"
     - require:
       - append_settings_{{domain}}
     - listen_in:
@@ -94,7 +105,7 @@ add_local_settings_{{domain}}:
 
 change_wsgi_{{domain}}:
   file.replace:
-    - name: {{data['project_root']}}/settings/wsgi.py
+    - name: {{project_root}}/settings/wsgi.py
     - pattern: settings.settings
     - repl: settings.settings
 
