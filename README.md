@@ -10,12 +10,12 @@ First download bootstrap-salt:
 ```wget -O bootstrap-salt.sh https://bootstrap.saltstack.com```  
 You can choose to run salt with master and minion or masterless.
 
-### Master 
+### Master
 ```sh bootstrap-salt.sh -M -i [MASTER ID]```  
 (Notice -M for master)
 
 ### Minion  
-```sh bootstrap-salt.sh -A [MASTER ID] -i [MINION ID]``` 
+```sh bootstrap-salt.sh -A [MASTER ID] -i [MINION ID]```
 
 ### Masterless minion
 ```sh bootstrap-salt.sh -i [MINION ID]```
@@ -48,3 +48,5 @@ Change al capitalised settings to your own
 Then:
 ```salt-call state.apply```
 
+TODO:  
+add .vimrc, .bashrc and private_key  

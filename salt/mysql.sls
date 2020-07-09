@@ -38,12 +38,12 @@ mysql-database-{{domain}}:
   mysql_database.present:
     - name: {{domain}}
   mysql_user.present:
-    - name: {{data['user']}}
-    - password_hash: '{{pillar.get('users')[data['user']]['mysql_password']}}'
+    - name: {{data['project_name']}}
+    - password_hash: '{{data['mysql_password_hash']}}'
   mysql_grants.present:
     - database: {{domain}}.*
     - grant: ALL PRIVILEGES
-    - user: {{data['user']}}
+    - user: {{data['project_name']}}
   require:
     - pkg: python-mysqldb
 {% endfor %}
@@ -51,10 +51,10 @@ mysql-database-{{domain}}:
 mysql-user-root:
   mysql_user.present:
     - name: root
-    - password_hash: '{{pillar.get('RootMysqlPassword', "")}}'
+    - password_hash: '{{pillar.get('root_mysql_password', "")}}'
   mysql_grants.present:
     - database: '*'
     - grant: ALL PRIVILEGES
-    - user: root
+    - user: {{pillar.get('root_user', "")}}
   require:
     - pkg: python-mysqldb

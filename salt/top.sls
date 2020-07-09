@@ -4,5 +4,5 @@ base:
     - users
     - ssh
     - apache
-    - django
     - mysql
+    - django

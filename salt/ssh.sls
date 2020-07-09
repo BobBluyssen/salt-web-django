@@ -1,4 +1,4 @@
-{% if pillar.get('AllowPasswordAuthentication') %}
+{% if pillar.get('allow_password_authentication') %}
 ssh_password:
   file.replace:
     - name: /etc/ssh/sshd_config
@@ -8,7 +8,7 @@ ssh_password:
     - show_changes: True
 {% endif %}
 
-{% if pillar.get('AllowRootLogin') %}
+{% if pillar.get('allow_root_login') %}
 ssh_root:
   file.replace:
     - name: /etc/ssh/sshd_config
